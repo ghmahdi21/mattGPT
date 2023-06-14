@@ -1,0 +1,4 @@
+UPDATE Forward FUNCTION to zero the last number of like : need to check how to manage not using the actual numbe of likes in the previous tokens prediction when the block has multiple tokens
+need to make the first layer with one head (since the 512image embedding + 1number of like doesn't make sense to be splitted over heads)
+Maybe need to update the scaling approach for number of likes. global scalar vs per page or per batch? 
+lm_head linear ? :/

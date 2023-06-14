@@ -181,12 +181,11 @@ class FirstBlock(nn.Module):
         self.mlp = MLP(config)
 
     def forward(self, x):
-        with torch.no_grad():
-            x_with_likes = self.ln_1(x)
-            x[:, :, -1] = 0
-            x_without_likes = self.ln_1(x)
-            x = x + self.attn(x_with_likes, x_without_likes)
-            x = x + self.mlp(self.ln_2(x))
+        x_with_likes = self.ln_1(x)
+        x[:, :, -1] = 0
+        x_without_likes = self.ln_1(x)
+        x = x + self.attn(x_with_likes, x_without_likes)
+        x = x + self.mlp(self.ln_2(x))
         return x
 
 class Block(nn.Module):
@@ -224,7 +223,7 @@ class GPT(nn.Module):
             # wte = nn.Embedding(config.vocab_size, config.n_embd),
             # wpe = nn.Embedding(config.block_size, config.n_embd),
             # drop = nn.Dropout(config.dropout),
-            h = nn.ModuleList([FirstBlock(config)]+[Block(config) for _ in range(config.n_layer-1)]),
+            h = nn.ModuleList([Block(config) for _ in range(config.n_layer)]),
             ln_f = LayerNorm(config.n_embd, bias=config.bias),
         ))
         self.lm_head = nn.Linear(config.n_embd, 1, bias=False)
@@ -280,8 +279,8 @@ class GPT(nn.Module):
         x = self.transformer.ln_f(x)
 
         if targets is not None:
-            # if we are given some desired targets also calculate the loss
             logits = self.lm_head(x)
+            # if we are given some desired targets also calculate the loss
             loss = self.loss(logits.view(-1), targets.view(-1))
         else:
             # inference-time mini-optimization: only forward the lm_head on the very last position
