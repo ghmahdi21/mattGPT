@@ -1,4 +1,23 @@
-UPDATE Forward FUNCTION to zero the last number of like : need to check how to manage not using the actual numbe of likes in the previous tokens prediction when the block has multiple tokens
-need to make the first layer with one head (since the 512image embedding + 1number of like doesn't make sense to be splitted over heads)
-Maybe need to update the scaling approach for number of likes. global scalar vs per page or per batch? 
-lm_head linear ? :/
+QUESTIONS:
+1- (v1 solves) UPDATE Forward FUNCTION to zero the last number of like : need to check how to manage not using the actual numbe of likes in the previous tokens prediction when the block has multiple tokens
+2- (v1 solves) need to make the first layer with one head (since the 512image embedding + 1number of like doesn't make sense to be splitted over heads)
+3- Maybe need to update the scaling approach for number of likes. global scalar vs per page or per batch? currently is per sequence from what I see.
+4- lm_head linear ? :/ chatGPT says yeah :/
+
+
+NOTES:
+Clip:
+    397 embedding and resizing => thumbnail: 6.7s, resize: 7.9s, Clip: 8.2s => 50 image/second
+    397 embedding 512-float16 store as bin => 407kb : all data => 8gb
+
+making float16 changes the values by 0.000001
+READZIP: https://stackoverflow.com/questions/62924411/how-to-iterate-through-the-files-in-a-zip-folder-without-extracting-them
+
+Lots of ups and down when los batch_size
+
+5-10K tokens per iter is good relative to the amount of data and the model size(10-20M)
+
+
+
+
+Component remaining:
